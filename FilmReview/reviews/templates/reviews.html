@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load tags %}
+{% load static %}
+
+{% block title %}Film review database{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <div class="row text-center">
+            <div class="col">
+                <img src="{% static 'images/irobot.jpg' %}" height="300px" alt="irobot">
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="col">
+                <h3>This is a review database of the movie <b>"I, Robot"</b> </h3>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="col">
+                <div style="padding-top: 10px;">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addReview" style="border-radius: 40px;">
+                      + Add a new review
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Add note Modal -->
+    <div class="modal fade" id="addReview" tabindex="-1" role="dialog" aria-labelledby="addReviewTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="row">
+                {% if form %}
+                <div class="col text-center" style="padding: 30px;">
+                    <form method="POST" action="{% url 'reviews' %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="form-group col text-center">
+                                {{ form.title | add_css:"form-control" }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col text-center">
+                                {{ form.description | add_css:"form-control" }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                <div class="btn-group float-right" role="group" aria-label="Basic example">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 10px;">
+        <div class="col-lg-3 col-md-3"></div>
+        <div class="col-lg-6 col-md-6">
+            {% for review in reviews %}
+                <div class="card btn-block" style="margin-top: 10px; border-radius: 0px; padding: 10px; background-color: #fafafa">
+                    <div class="row">
+                        <div class="col-9">
+                            <a href="" data-toggle="collapse" data-target="#{{ review.pk }}" style="text-decoration: none;" >{{ review.title }}  <font size="1" color="#d1d1d1" face="serif">(click to expand)</font></a>
+
+                            {% if review.description %}
+                                <div class="collapse" id="{{ review.pk }}">
+                                  <div class="" style="border-radius: 0;">
+                                    <div class="row">
+                                        <div class="col">
+                                            {{ review.description }}
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-3">
+                            <div class="btn-group float-right" role="group">
+                                {{review.rating}}/10&nbsp;
+                                <a  class="float-right" data-toggle="tooltip" title="{% if review.sentiment %} This user liked the movie {% else %} This user didn't like the movie {% endif %}"> {% if review.sentiment %} &#10004 {% else %} &#10060 {% endif %}</a>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-lg-2 col-md-2"></div>
+    </div>
+
+{% endblock %}
+
+
+{% block javascript %}
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+{% endblock %}
